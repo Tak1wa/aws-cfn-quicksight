@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ---
+Parameters:
+  AnalysisName: 
+    Type: String
+    Default: hoge20220315analysis2
+    Description: ---
+  UserPrincipal:
+    Type: String
+    Default: arn:aws:quicksight:ap-northeast-1:111111111111:user/default/cm-iwasa.takahito/cm-iwasa.takahito
+    Description: ---
+  SourceTemplateArn:
+    Type: String
+    Default: arn:aws:quicksight:ap-northeast-1:222222222222:template/hoge20220130template
+    Description: ---
+  DataSetArn:
+    Type: String
+    Default: arn:aws:quicksight:ap-northeast-1:111111111111:dataset/093889b6-0ad3-4258-9ad3-8aa6e590a958
+    Description: ---
+Resources: 
+  Analytisis:
+    Type: AWS::QuickSight::Analysis
+    Properties: 
+      AnalysisId: !Sub ${AnalysisName}-id
+      Name: !Ref AnalysisName
+      AwsAccountId: !Ref AWS::AccountId
+      Permissions: 
+        - Principal: !Ref UserPrincipal
+          Actions: 
+            - quicksight:RestoreAnalysis
+            - quicksight:UpdateAnalysisPermissions
+            - quicksight:DeleteAnalysis
+            - quicksight:DescribeAnalysisPermissions
+            - quicksight:QueryAnalysis
+            - quicksight:DescribeAnalysis
+            - quicksight:UpdateAnalysis
+      SourceEntity: 
+        SourceTemplate: 
+          Arn: !Ref SourceTemplateArn
+          DataSetReferences: 
+            - DataSetArn: !Ref DataSetArn
+              DataSetPlaceholder: hogedatasetplaceholder
+
+  Dashboard:
+    Type: AWS::QuickSight::Dashboard
+    Properties: 
+      AwsAccountId: !Ref AWS::AccountId
+      DashboardId: !Sub ${AnalysisName}-dashboard-id
+      Name: !Sub ${AnalysisName}-dashboard
+      Permissions: 
+        - Principal: !Ref UserPrincipal
+          Actions: 
+            - quicksight:DescribeDashboard
+            - quicksight:ListDashboardVersions
+            - quicksight:UpdateDashboardPermissions
+            - quicksight:QueryDashboard
+            - quicksight:UpdateDashboard
+            - quicksight:DeleteDashboard
+            - quicksight:DescribeDashboardPermissions
+            - quicksight:UpdateDashboardPublishedVersion
+      DashboardPublishOptions: 
+        AdHocFilteringOption: 
+          AvailabilityStatus: ENABLED
+        ExportToCSVOption: 
+          AvailabilityStatus: DISABLED
+        SheetControlsOption: 
+          VisibilityState: EXPANDED
+      SourceEntity: 
+        SourceTemplate: 
+          Arn: !Ref SourceTemplateArn
+          DataSetReferences: 
+            - DataSetArn: !Ref DataSetArn
+              DataSetPlaceholder: hogedatasetplaceholder
