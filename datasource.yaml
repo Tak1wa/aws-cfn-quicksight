@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ---
+Resources: 
+  HogeDataSource:
+    Type: AWS::QuickSight::DataSource
+    Properties: 
+      AwsAccountId: !Ref AWS::AccountId
+      Name: hoge-datasource
+      DataSourceId: hoge-datasource-id
+      Type: S3
+      DataSourceParameters:
+        S3Parameters: 
+          ManifestFileLocation: 
+            Bucket: 20210327quicksightsampledata
+            Key: hoge-manifest.json
+      Permissions:
+        - Actions:
+            - quicksight:UpdateDataSourcePermissions
+            - quicksight:DescribeDataSource
+            - quicksight:DescribeDataSourcePermissions
+            - quicksight:PassDataSource
+            - quicksight:UpdateDataSource
+            - quicksight:DeleteDataSource
+          Principal: !Sub arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:user/default/hogeuser
+
+  HogeDataSet:
+    Type: AWS::QuickSight::DataSet
+    Properties: 
+      Name: hoge-dataset
+      AwsAccountId: !Ref AWS::AccountId
+      DataSetId: hoge-dataset-id
+      ImportMode: SPICE
+      PhysicalTableMap: 
+        hoge-physical:
+          S3Source: 
+            DataSourceArn: !GetAtt HogeDataSource.Arn
+            InputColumns: 
+              -   Name: hoge1
+                  Type: STRING
+              -   Name: hoge2
+                  Type: STRING
+      LogicalTableMap:
+        hoge-logical:
+          Alias: hoge-logi
+          DataTransforms: 
+            - CastColumnTypeOperation:
+                ColumnName: hoge2
+                NewColumnType: INTEGER
+          Source: 
+            PhysicalTableId: hoge-physical
+      Permissions:
+        - Actions:
+            - quicksight:UpdateDataSetPermissions
+            - quicksight:DescribeDataSet
+            - quicksight:DescribeDataSetPermissions
+            - quicksight:PassDataSet
+            - quicksight:DescribeIngestion
+            - quicksight:ListIngestions
+            - quicksight:UpdateDataSet
+            - quicksight:DeleteDataSet
+            - quicksight:CreateIngestion
+            - quicksight:CancelIngestion
+          Principal: !Sub arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:user/default/hogeuser

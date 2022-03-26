@@ -1,0 +1,15 @@
+{
+    "fileLocations": [
+        {
+            "URIs": [
+                "s3://20210327quicksightsampledata/hoge.csv"
+            ]
+        }
+    ],
+    "globalUploadSettings": {
+        "format": "CSV",
+        "delimiter": ",",
+        "textqualifier": "'",
+        "containsHeader": "true"
+    }
+}
